@@ -8,27 +8,34 @@ setInterval(() => {
         img1.classList.remove('active');
         img2.classList.add('active');
         currentImage = 2;
-    } else {  
+    } else {
         img2.classList.remove('active');
         img1.classList.add('active');
         currentImage = 1;
     }
 }, 5000);
 
-// Carregar projetos do GitHub
+// Carregar projetos do GitHub (excluindo repositórios específicos)
 async function loadGitHubProjects() {
     const container = document.getElementById('projects-container');
     
+    // Lista de repositórios que NÃO devem aparecer
+    const excludedRepos = ['Primeiro-Portfolio-', 'samuel0860'];
+    
     try {
-        const response = await fetch('https://api.github.com/users/samuel0860/repos?sort=updated&per_page=6');
+        const response = await fetch('https://api.github.com/users/samuel0860/repos?sort=updated&per_page=20');
         const repos = await response.json();
         
-        if (repos.length === 0) {
+        // Filtrar repositórios excluídos
+        const filteredRepos = repos.filter(repo => !excludedRepos.includes(repo.name));
+        
+        if (filteredRepos.length === 0) {
             container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum projeto encontrado.</p>';
             return;
         }
         
-        container.innerHTML = repos.map(repo => `
+        // Mostrar apenas os 6 primeiros após filtrar
+        container.innerHTML = filteredRepos.slice(0, 6).map(repo => `
             <div class="project-card">
                 <h3>${repo.name}</h3>
                 <p>${repo.description || 'Sem descrição disponível'}</p>
